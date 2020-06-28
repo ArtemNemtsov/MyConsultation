@@ -1,0 +1,3 @@
+﻿<!--
+Scaffold-DbContext -ContextDir Connect -OutputDir Models "Server=ec2-46-137-156-205.eu-west-1.compute.amazonaws.com; Port=5432; Database=d6tp5on2hao81v; User Id=hsrhmeivinzeay; Password=831b8fdcb7ed2f2fb349586fee5f16e62e794f08bf4c718dd5dd39b632ff8c9a;CommandTimeout=300;Pooling=false; sslmode=Require; Trust Server Certificate=true;" Npgsql.EntityFrameworkCore.PostgreSQL -Force
+-->
