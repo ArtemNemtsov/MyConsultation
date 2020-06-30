@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DBContext.Connect;
+using Consultation.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,10 +18,9 @@ namespace MyConsultation
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // для использования базы данных
-            string connectionString = Configuration.GetConnectionString("PostgreSQL");
-            services.AddDbContext<d6tp5on2hao81vContext>(options => options.UseNpgsql(connectionString));
-
+            // подключам пользовательские сервисы
+            services.AddDbContext(Configuration);
+            services.AddPageServices();
 
             services.AddControllersWithViews();
         }
@@ -49,13 +42,11 @@ namespace MyConsultation
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}");
             });
         }
     }

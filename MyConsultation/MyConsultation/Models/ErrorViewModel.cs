@@ -1,5 +1,3 @@
-using System;
-
 namespace MyConsultation.Models
 {
     public class ErrorViewModel
