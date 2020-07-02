@@ -2,9 +2,91 @@
     ViewData["Title"] = "Список пациентов";
 }
 
-    <form method="POST">
-        <button asp-controller="Patient" asp-action="New" type="submit" class="btn btn-primary">Новый пациент</button>
-    </form>
+@model IEnumerable<ConsultationService.PageModels.PatientJournalModel>
+
+<head>
+    <style>
+        .patient {
+            margin-top: 100px;
+        }
+    </style>
+</head>
+
+<form method="POST">
+    <button asp-controller="Patient" asp-action="New" type="submit" class="btn btn-primary">Новый пациент</button>
+</form>
+
+<div class="patient">
+
+    <table class="table" }>
+
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FIO)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Gender)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Birthdate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Snils)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <thead>
+            <tr>
+                <th>
+                    <form asp-controller="Patient" asp-action="SearshByFIO" method="get">
+                        <p>
+                            <input type="text" name="FIO" />
+                            <input type="submit" value="Найти" />
+                        </p>
+                    </form>
+                </th>
+                <th></th>
+                <th></th>
+
+                <th>
+                    <form asp-controller="Patient" asp-action="SearshBySnils" method="get">
+                        <p>
+                            <input type="text" name="snils" />
+                            <input type="submit" value="Найти" />
+                        </p>
+                    </form>
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FIO)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Gender)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Birthdate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Snils)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" class="btn btn-outline-warning" asp-route-id="@item.IdPatient">Редактировать</a>
+                        <a asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@item.IdPatient">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 
 

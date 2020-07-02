@@ -19,7 +19,7 @@
                 url: '/Patient/CheckSnilsValid',
                 data:
                 {
-                    dirtySnils: snils
+                    newSnils: snils
                 },
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",
