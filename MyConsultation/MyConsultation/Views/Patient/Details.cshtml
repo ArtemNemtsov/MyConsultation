@@ -1,0 +1,89 @@
+﻿@model ConsultationService.PageModels.PatientDetailModel
+@{
+    ViewData["Title"] = "Новый пациент";
+}
+
+<head>
+    <style>
+        .content {
+            margin-top: 100px;
+            width: 30%;
+            float: left;
+        }
+        .consultation {
+            margin-top: 100px;
+            margin-left:50px;
+            width: 60%;
+            float: left;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="container">
+
+            <div class="row">
+
+                <div class="content">
+                    <p>
+                        <label> Пациент</label>
+                        <input type="text" name="FullName" value="@Model?.FullName" class="form-control" readonly>
+                    </p>
+
+                    <p>
+                        <label> СНИЛС</label>
+                        <input type="text" name="Snils" value="@Model?.Snils" class="form-control" readonly>
+                    </p>
+
+                    <p>
+                        <label> ПОЛ</label>
+                        <input type="text" name="Gender" value="@Model?.Gender" class="form-control" readonly>
+                    </p>
+
+                    <p>
+                        <label> Возраст</label>
+                        <input type="text" name="Age" value="@Model?.Age" class="form-control" readonly>
+                    </p>
+                    <br /><a class="btn btn-primary" href="~/Patient/Journal"> Назад </a>
+                </div>
+
+                <div class="consultation">
+                    <h5 class="text-center">Консультации</h5>
+                    <table class="table" }>
+                        <thead>
+                            <tr>
+                                <td>
+                                    <h6>Дата Консультации</h6>
+                                </td>
+                                <td>
+                                    <h6>Время Консультации</h6>
+                                </td>
+                                <td>
+                                    <h6>Симптомы</h6>
+                                </td>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model.Consultations)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Date)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Time)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Symptoms)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

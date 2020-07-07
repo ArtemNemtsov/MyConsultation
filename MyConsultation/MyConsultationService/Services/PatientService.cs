@@ -3,8 +3,11 @@ using ConsultationService.PageModels;
 using DBContext.Connect;
 using DBContext.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ConsultationService.Services
 {
@@ -19,6 +22,11 @@ namespace ConsultationService.Services
         public void Delete(int idPatient)
         {
             var patient = _postgres.Patient.Find(idPatient);
+
+            var consultations = _postgres.Сonsultation
+                .Where(w => w.IdPatient == idPatient);
+
+            _postgres.RemoveRange(consultations);
             _postgres.Remove(patient);
             _postgres.SaveChanges();
         }
@@ -35,6 +43,35 @@ namespace ConsultationService.Services
             return PatientExist(idPatient) 
                 ? _postgres.Patient.Find(idPatient) 
                 : null;
+        }
+
+        public async Task<PatientDetailModel> GetDetailsAsync(int idPatient)
+        {
+               var patientDetail = await _postgres.VJournalPatient
+                .AsNoTracking()
+                .Where(w => w.IdPatient == idPatient)
+                .Select(s => new PatientDetailModel
+                {
+                    IdPatient = s.IdPatient,
+                    FullName = s.Fio,
+                    Gender = s.Gender,
+                    Snils = s.Snils,
+                    Age =  DateTime.Now.DayOfYear < s.Birthdate.DayOfYear
+                    ? DateTime.Today.Year - s.Birthdate.Year - 1
+                    : DateTime.Today.Year - s.Birthdate.Year
+   ,
+                }).FirstOrDefaultAsync();
+   
+            patientDetail.Consultations = await GetConsultationAsync(idPatient);
+            return patientDetail;
+        }
+
+        private async Task<List<Сonsultation>> GetConsultationAsync(int idPatient)
+        {
+            return await _postgres.Сonsultation
+                .AsNoTracking()
+                .Where(s => s.IdPatient == idPatient)
+                .ToListAsync();
         }
 
         public IQueryable<PatientJournalModel> GetAll()

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MediaStudioService.Core.Classes;
-using System;
 
 namespace MyConsultation.Controllers
 {
@@ -17,12 +16,22 @@ namespace MyConsultation.Controllers
             _patientService = patientService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Journal()
         {
            var patiens = _patientService.GetAll();
            return View(await patiens.ToListAsync());
         }
-        public IActionResult New()
+
+        [HttpGet]
+        public IActionResult Details(int idPatient)
+        {
+            var patiens = _patientService.GetDetailsAsync(idPatient).Result;
+            return View(patiens);
+        }
+
+        [HttpGet]
+        public IActionResult Create()
         {
             return View();
         }
@@ -32,10 +41,11 @@ namespace MyConsultation.Controllers
         {
             _patientService.Create(patient);
             ViewBag.Information = "Пациент успешно сохранен!";
-            return View("New", ViewBag);
+            return View("Update", patient);
         }
 
-        public IActionResult Edit(int idPatient)
+        [HttpGet]
+        public IActionResult Update(int idPatient)
         {
             var patient = _patientService.Get(idPatient);
 
@@ -57,7 +67,7 @@ namespace MyConsultation.Controllers
 
             _patientService.Update(patient);
             ViewBag.Information = "Данные пациента успешно изменены!";
-            return View("Edit", patient);
+            return View("Update", patient);
         }
 
         public IActionResult Delete(int idPatient)

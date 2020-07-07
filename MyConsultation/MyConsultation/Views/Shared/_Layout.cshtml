@@ -6,6 +6,13 @@
     <title>@ViewData["Title"] - MyConsultation</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+
+    <style>
+        li {
+            margin-right: 10px; /* Расстояние снизу */
+        }
+    </style>
+
 </head>
 <body>
     <header>
@@ -18,11 +25,22 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Patient" asp-action="Journal">Пациент</a>
+                            <a class="btn btn-primary" asp-area="" asp-controller="Patient" asp-action="Journal"> Пациент</a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Сonsultation" asp-action="Index">Консультация</a>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary"> Консультанция</button>
+                                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Сonsultation" asp-action="Create">Создать</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Сonsultation" asp-action="Journal">Журнал</a>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -34,8 +52,6 @@
             @RenderBody()
         </main>
     </div>
-
-
 
     <footer class="border-top footer text-muted">
         <div class="container">

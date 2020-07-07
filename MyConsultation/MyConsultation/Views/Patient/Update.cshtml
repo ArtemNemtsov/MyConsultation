@@ -1,8 +1,11 @@
-﻿ @ViewData["Title"] = "Новый пациент";
+﻿@model DBContext.Models.Patient
+@{
+    ViewData["Title"] = "Редктирование пациента";
+}
 <head>
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="~/js/NewPatient.js"></script>
+    <script src="~/js/EditPatient.js"></script>
 
     <style>
         .content {
@@ -14,34 +17,40 @@
 
 <body>
     <div class="content">
-        <form id="idForm" asp-action="Create">
+
+        <form id="idForm" asp-action="Update" asp-route-idPatient="@Model.IdPatient">
+
             <p>
-                <input type="text" name="Surname" class="form-control" placeholder="Фамилия" minlength="3" maxlength="30" required autofocus>
+                <input name="IdPatient" id="IdPatient" value="@(Model?.IdPatient)" type="hidden">
             </p>
 
             <p>
-                <input type="text" name="Name" class="form-control" minlength="3" maxlength="30" placeholder="Имя" required>
+                <input type="text" name="Surname" value="@(Model?.Surname)" class="form-control" placeholder="Фамилия" minlength="3" maxlength="30" required autofocus>
             </p>
 
             <p>
-                <input type="text" name="MiddleName" class="form-control" minlength="3" maxlength="30" placeholder="Отчество">
+                <input type="text" name="Name" value="@(Model?.Name)" class="form-control" minlength="3" maxlength="30" placeholder="Имя" required>
             </p>
 
             <p>
-                <input type="date" id="idBirthdate" name="Birthdate" class="form-control" required>
+                <input type="text" name="MiddleName" value="@(Model?.MiddleName)" class="form-control" minlength="3" maxlength="30" placeholder="Отчество">
+            </p>
+
+            <p>
+                <input asp-for="Birthdate" name="Birthdate" type="date" asp-format="{0:yyyy-MM-dd}" class="form-control" max=@DateTime.Today.Date required />
             </p>
 
             <p>
                 <div class="custom-control custom-radio">
-                    @Html.RadioButton("Gender", "M", true)
+                    @Html.RadioButtonFor(model => model.Gender, "M", true)
                     <span>Мужской</span> <br />
-                    @Html.RadioButton("Gender", "Ж")
+                    @Html.RadioButtonFor(model => model.Gender, "Ж")
                     <span>Женский</span> <br />
                 </div>
             </p>
 
             <p>
-                <input type="text" id="idSnils" name="Snils" class="form-control" placeholder="СНИЛС" minlength="14" maxlength="14" required>
+                <input type="text" id="idSnils" name="Snils" value="@(Model?.Snils)" class="form-control" placeholder="СНИЛС" minlength="14" maxlength="14" required>
             </p>
 
             <p>
