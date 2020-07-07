@@ -4,9 +4,10 @@
     $("#idForm").submit(function (e) 
     {
         e.preventDefault();
-        var correctLength = 14;
-      
-        const snils = $("#idSnils").val();
+        var correctLength = 14;   
+        var snils = $("#idSnils").val();
+        var idPatient = $("#IdPatient").val();
+
         if (snils.length != correctLength)
         {
             document.getElementById('idInformation').innerHTML = "Введено неверное количество символов для СНИЛС";
@@ -21,7 +22,8 @@
                 url: '/Patient/CheckSnils',
                 data:
                 {
-                    Snils: snils
+                    Snils: snils,
+                    IdPatient: idPatient
                 },
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",

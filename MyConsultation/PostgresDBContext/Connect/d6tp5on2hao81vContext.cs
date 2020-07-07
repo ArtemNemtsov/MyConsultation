@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using DBContext.Models;
 
 namespace DBContext.Connect
@@ -15,10 +17,16 @@ namespace DBContext.Connect
         }
 
         public virtual DbSet<Patient> Patient { get; set; }
+        public virtual DbSet<VJournalPatient> VJournalPatient { get; set; }
         public virtual DbSet<Сonsultation> Сonsultation { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseNpgsql("Server=ec2-46-137-156-205.eu-west-1.compute.amazonaws.com; Port=5432; Database=d6tp5on2hao81v; User Id=hsrhmeivinzeay; Password=831b8fdcb7ed2f2fb349586fee5f16e62e794f08bf4c718dd5dd39b632ff8c9a; CommandTimeout=300;Pooling=false; sslmode=Require; Trust Server Certificate=true;");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -69,6 +77,29 @@ namespace DBContext.Connect
                     .HasColumnName("surname")
                     .HasMaxLength(30)
                     .HasComment("фамилия");
+            });
+
+            modelBuilder.Entity<VJournalPatient>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("v_journal_patient", "ref");
+
+                entity.Property(e => e.Birthdate)
+                    .HasColumnName("birthdate")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.Fio).HasColumnName("fio");
+
+                entity.Property(e => e.Gender)
+                    .HasColumnName("gender")
+                    .HasMaxLength(1);
+
+                entity.Property(e => e.IdPatient).HasColumnName("id_patient");
+
+                entity.Property(e => e.Snils)
+                    .HasColumnName("snils")
+                    .HasMaxLength(14);
             });
 
             modelBuilder.Entity<Сonsultation>(entity =>

@@ -5,7 +5,6 @@ using DBContext.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ConsultationService.Services
 {
@@ -17,15 +16,36 @@ namespace ConsultationService.Services
             _postgres = postgres;
         }
 
+        public void Delete(int idPatient)
+        {
+            var patient = _postgres.Patient.Find(idPatient);
+            _postgres.Remove(patient);
+            _postgres.SaveChanges();
+        }
+
+        public void Edit(int idPatient)
+        {
+            var patient = _postgres.Patient.Find(idPatient);
+            _postgres.Remove(patient);
+            _postgres.SaveChanges();
+        }
+
+        public Patient Get(int idPatient)
+        {
+            return PatientExist(idPatient) 
+                ? _postgres.Patient.Find(idPatient) 
+                : null;
+        }
+
         public IQueryable<PatientJournalModel> GetAll()
         {
-            return _postgres.Patient
+            return _postgres.VJournalPatient
                 .AsNoTracking()
                 .Take(100)
                 .Select(s => new PatientJournalModel
                 { 
                     IdPatient = s.IdPatient,
-                    FIO = $"{s.Surname} {s.Name} {s.MiddleName}",
+                    FIO = s.Fio,
                     Birthdate = s.Birthdate.ToLongDateString(),
                     Gender = s.Gender,
                     Snils = s.Snils,
@@ -54,24 +74,62 @@ namespace ConsultationService.Services
             return patiens;
         }
 
-        public int Save(Patient patient)
+        public int Create(Patient patient)
         {
             _postgres.Patient.Add(patient);
             _postgres.SaveChanges();
             return patient.IdPatient;
         }
+
+        public int Update(Patient patient)
+        {
+            _postgres.Patient.Update(patient);
+            _postgres.SaveChanges();
+            return patient.IdPatient;
+        }
+
         public bool CheckSnilsValid(string dirtySnils)
         {
             var snils = SnilsBuilder.BuldSnils(dirtySnils);
 
-            return snils.IsValid;
+            if (!snils.IsValid)
+                throw new Exception($"Введенные данные СНИЛС некоректны, попробуйте снова!");
+
+            return true;
         }
 
-        public bool SnilsExist(string snils)
+        public bool CheckSnils(string newSnils, int? idPatient)
         {
-            return _postgres.Patient              
-                .Where(w => w.Snils == snils)
+            // проверяем корректность СНИЛС
+            CheckSnilsValid(newSnils);
+
+            // Если редактировали пациента
+            if (idPatient.HasValue)
+            {
+                var oldSnils = _postgres.Patient.Find(idPatient).Snils;
+
+                // Но СНИЛС остался прежним, то все ок
+                if (oldSnils == newSnils)
+                    return true;          
+            }
+            
+            // проверяем, что введденый СНИЛС уникальный
+            if (CheckSnilsExist(newSnils))
+                throw new Exception($"Данный СНИЛС уже заведен в БД!");
+
+            return true;
+        }
+
+        private bool CheckSnilsExist(string newSnils)
+        {
+            return _postgres.Patient
+                .Where(w => w.Snils == newSnils)
                 .Any();
+        }
+
+        public bool PatientExist(int idPatient)
+        {
+            return _postgres.Patient.Any(w => w.IdPatient == idPatient);
         }
     }
 }

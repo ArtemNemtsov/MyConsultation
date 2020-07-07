@@ -3,8 +3,8 @@ using DBContext.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using MediaStudioService.Core.Classes;
 using System;
-using System.Linq;
 
 namespace MyConsultation.Controllers
 {
@@ -17,10 +17,58 @@ namespace MyConsultation.Controllers
             _patientService = patientService;
         }
 
-        public async Task<IActionResult> JournalAsync()
+        public async Task<IActionResult> Journal()
         {
            var patiens = _patientService.GetAll();
-            return View(await patiens.ToListAsync());
+           return View(await patiens.ToListAsync());
+        }
+        public IActionResult New()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Patient patient)
+        {
+            _patientService.Create(patient);
+            ViewBag.Information = "Пациент успешно сохранен!";
+            return View("New", ViewBag);
+        }
+
+        public IActionResult Edit(int idPatient)
+        {
+            var patient = _patientService.Get(idPatient);
+
+            if (patient == null)
+            {
+                return NotFound();
+            }
+
+            return View(patient);
+        }
+
+        [HttpPost]
+        public IActionResult Update(Patient patient)
+        {
+            if (!_patientService.PatientExist(patient.IdPatient))
+            {
+                return NotFound();
+            }
+
+            _patientService.Update(patient);
+            ViewBag.Information = "Данные пациента успешно изменены!";
+            return View("Edit", patient);
+        }
+
+        public IActionResult Delete(int idPatient)
+        {
+            if (!_patientService.PatientExist(idPatient))
+            {
+                return NotFound();
+            }
+
+            _patientService.Delete(idPatient);
+            return RedirectToAction("Journal");
         }
 
         [HttpGet]
@@ -38,24 +86,9 @@ namespace MyConsultation.Controllers
         }
 
         [HttpPost]
-        public JsonResult CheckSnilsValid(string newSnils)
+        public ActionResult<Responce> CheckSnils(string Snils, int? idPatient = null)
         {
-            var isNewSnils = _patientService.SnilsExist(newSnils);
-            var isValid = isNewSnils && _patientService.CheckSnilsValid(newSnils); 
-            return Json(new { isValid});
-        }
-
-        [HttpPost]
-        public IActionResult Save(Patient patient)
-        {
-            _patientService.Save(patient);
-            ViewBag.Information = "Пациент успешно сохранен!";
-            return View("New", ViewBag);
-        }
-
-        public IActionResult New()
-        {
-            return View();
+            return SafeExecutor.Run(() => _patientService.CheckSnils(Snils, idPatient));
         }
     }
 }
