@@ -79,36 +79,30 @@ namespace ConsultationService.Services
             return _postgres.VJournalPatient
                 .AsNoTracking()
                 .Take(100)
-                .Select(s => new PatientJournalModel
+                .Select(journalPatient => new PatientJournalModel
                 { 
-                    IdPatient = s.IdPatient,
-                    FIO = s.Fio,
-                    Birthdate = s.Birthdate.ToLongDateString(),
-                    Gender = s.Gender,
-                    Snils = s.Snils,
+                    IdPatient = journalPatient.IdPatient,
+                    FIO = journalPatient.Fio,
+                    Birthdate = journalPatient.Birthdate.ToLongDateString(),
+                    Gender = journalPatient.Gender,
+                    Snils = journalPatient.Snils,
                 });
         }
 
         public IQueryable<PatientJournalModel> FindBySnils(string searshSnils)
         {
-            var patiens = GetAll();
-
-            if (!String.IsNullOrEmpty(searshSnils))
-            {
-                patiens = patiens.Where(s => s.Snils.Contains(searshSnils));
-            }
-            return patiens;
+            return String.IsNullOrEmpty(searshSnils)
+                ? GetAll()
+                : GetAll()
+                    .Where(patientJournal => patientJournal.Snils.Contains(searshSnils));
         }
 
         public IQueryable<PatientJournalModel> FindByFIO(string FIO)
         {
-            var patiens = GetAll();
-
-            if (!String.IsNullOrEmpty(FIO))
-            {
-                patiens = patiens.Where(s => s.FIO.Contains(FIO));
-            }
-            return patiens;
+            return String.IsNullOrEmpty(FIO)
+                ? GetAll()
+                : GetAll()
+                    .Where(patientJournal => patientJournal.FIO.Contains(FIO));
         }
 
         public int Create(Patient patient)
@@ -137,9 +131,6 @@ namespace ConsultationService.Services
 
         public bool CheckSnils(string newSnils, int? idPatient)
         {
-            // проверяем корректность СНИЛС
-            CheckSnilsValid(newSnils);
-
             // Если редактировали пациента
             if (idPatient.HasValue)
             {
@@ -149,8 +140,11 @@ namespace ConsultationService.Services
                 if (oldSnils == newSnils)
                     return true;          
             }
-            
-            // проверяем, что введденый СНИЛС уникальный
+
+            // проверяем корректность СНИЛС
+            CheckSnilsValid(newSnils);
+
+            // проверяем уникальность СНИЛС 
             if (CheckSnilsExist(newSnils))
                 throw new Exception($"Данный СНИЛС уже заведен в БД!");
 

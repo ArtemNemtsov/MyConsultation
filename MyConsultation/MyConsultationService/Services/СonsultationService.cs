@@ -2,9 +2,7 @@
 using DBContext.Connect;
 using DBContext.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ConsultationService.Services
 {
@@ -28,28 +26,29 @@ namespace ConsultationService.Services
             return _postgres.VJournalConsultation
                 .AsNoTracking()
                 .Take(100)
-                .Select(s => new ConsultationJournalModel
+                .Select(journalConsultation => new ConsultationJournalModel
                 {
-                    IdConsultation = s.IdConsultation,
-                    Patient = s.FioPatient,
-                    Date = s.Date.ToLongDateString(),
-                    Time = s.Time.ToString(),
+                    IdConsultation = journalConsultation.IdConsultation,
+                    Patient = journalConsultation.FioPatient,
+                    Date = journalConsultation.Date.ToLongDateString(),
+                    Time = journalConsultation.Time.ToString(),
                 });
         }
         public Сonsultation Get(long idConsultation)
         {
-            return _postgres.Сonsultation.Find(idConsultation);
+            return _postgres.Сonsultation
+                .Find(idConsultation);
         }
 
         public IQueryable<PatientModel> GetPatients()
         {
             return _postgres.Patient
                 .AsNoTracking()
-                .OrderBy(s => s.Surname)
-                .Select(s => new PatientModel
+                .OrderBy(patient => patient.Surname)
+                .Select(patient => new PatientModel
                 {
-                    IdPatient = s.IdPatient,
-                    FIO = $"{s.Surname} {s.Name} {s.MiddleName}", 
+                    IdPatient = patient.IdPatient,
+                    FIO = $"{patient.Surname} {patient.Name} {patient.MiddleName}", 
                 });
         }
 
@@ -62,14 +61,17 @@ namespace ConsultationService.Services
 
         public void Delete(long idConsultation)
         {
-            var patient = _postgres.Сonsultation.Find(idConsultation);
+            var patient = _postgres.Сonsultation
+                .Find(idConsultation);
+
             _postgres.Remove(patient);
             _postgres.SaveChanges();
         }
 
         public bool ConsultatonExist(long idConsultation)
         {
-            return _postgres.Сonsultation.Any(w => w.IdConsultation == idConsultation);
+            return _postgres.Сonsultation
+                .Any(consultation => consultation.IdConsultation == idConsultation);
         }
     }
 }

@@ -7,7 +7,9 @@ namespace ConsultationService.Core.Classes
         public static Snils BuldSnils(string dirtySnils)
         {
             // оставляем только цифры
-            string snils = new string(dirtySnils.Where(w => char.IsDigit(w)).ToArray());
+            string snils = new string(dirtySnils
+                .Where(symbol => char.IsDigit(symbol))
+                .ToArray());
 
             // получаем собственный номер снилса
             var personalNumber = SnilsParser.GetPersonalNumber(snils);

@@ -3,7 +3,6 @@ using DBContext.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using MediaStudioService.Core.Classes;
 
 namespace MyConsultation.Controllers
 {
@@ -96,9 +95,9 @@ namespace MyConsultation.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Responce> CheckSnils(string Snils, int? idPatient = null)
+        public bool CheckSnils(string Snils, int? idPatient = null)
         {
-            return SafeExecutor.Run(() => _patientService.CheckSnils(Snils, idPatient));
+            return _patientService.CheckSnils(Snils, idPatient);
         }
     }
 }
